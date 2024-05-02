@@ -60,7 +60,7 @@ sudo pip install xxx/xxx/xxx.whl
 ```
 
 ## We need to install opencv-python：
-Since the OpenCV that comes with the Jetson system will cause some problems, opencv needs to be reinstalled here. The `remove` operation is completed after the `install`.
+Reference [Howto-Install-Mediapipe-in-Jetson-Nano](https://github.com/Melvinsajith/How-to-Install-Mediapipe-in-Jetson-Nano). Since the OpenCV that comes with the Jetson system will cause some problems, opencv needs to be reinstalled here. The `remove` operation is completed after the `install`.
 ```
  sudo apt-get install python3-opencv 
  sudo apt-get remove python3-opencv
