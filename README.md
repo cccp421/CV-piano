@@ -58,3 +58,10 @@ After successfully installing `h5py3.1.0`, download the `Jetpack4.6.1` version o
 ```
 sudo pip install xxx/xxx/xxx.whl
 ```
+
+## We need to install opencv-python：
+Since the OpenCV that comes with the Jetson system will cause some problems, opencv needs to be reinstalled here. The `remove` operation is completed after the `install`.
+```
+ sudo apt-get install python3-opencv 
+ sudo apt-get remove python3-opencv
+```
