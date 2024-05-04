@@ -9,7 +9,7 @@ from models import model
 INDEX_FINGER = 8
 MIDDLE_FINGER = 12
 RING_FINGER = 16
-PINKY_FINGER = 20
+PINKY_FINGER = 20git
 FINGER = [INDEX_FINGER]
 UNTOUCH_FOLDER = "src/training_data/untouched"
 TOUCH_FOLDER = "src/training_data/touched"
