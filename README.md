@@ -1,19 +1,9 @@
-# PAPER PIANO
+# CV-piano
+Project source code from https://github.com/Mayuresh1611/Paper-Piano
 
-### Now we don't need to buy a Piano if we want to play music. We can play piano on paper, although it may not give a feeling of pressing keys on the piano but it gets work done!
-
-https://github.com/Mayuresh1611/Paper-Piano/assets/103099867/c2b0b4f1-3b6b-4eed-927d-91c5b5c91708
-
-**Currently it only supports a maximum of 2 fingers** (1 finger of both hands). Support for more fingers and a highly susceptible training model is on the way.
-
-1. [Setting up project](#setting-up-project)
-2. [How to Use](#how-to-use)
-3. [Training and Adjusting ](#training-and-adjusting)
-4. [Contributing to this project](#contributing-to-this-project)
-   
-## SETTING UP PROJECT
+## Setting up project
 Python version 3.11 and above
-1.  Clone the repository ```git clone https://github.com/Mayuresh1611/Paper-Piano.git```
+1. Clone the repository ```git clone https://github.com/Mayuresh1611/Paper-Piano.git```
 2. run command ```pip install -r requirements.txt``` in the command line.
 3. Execute ```run.py``` file
 
@@ -27,18 +17,51 @@ Just like shown in the demo video.
 4. A light source in front, ie. behind the camera would be preferred. Casting sharp shadows.
 4. Hand with all fingers.
 
-#### TRAINING AND ADJUSTING
-* During training the model on your finger, the first window will appear where the box will be drawn around the tip of the finger. If the box does not cover the complete finger and little surrounding of the finger. Adjust the camera accordingly.
-* In the training stage, do not move your finger furiously, move it slowly giving out every angle.
-* While training, during the touched finger state, do press the finger but not too hard. In an untouched finger state, do not touch paper, you can get near paper but not too close. Lift the finger high like you would normally do.
-* CNN has been used to train over the data, it distinguishes the touched and untouched finger, if the results are not satisfactory, retrain the model.    
-## CONTRIBUTING TO THIS PROJECT
-If we make this project into a complete working piano on paper. It would give access to pianos and instruments for those who cannot afford them. ```like me :)``` 
 
-* There are no set rules or code of conduct as of now. Anyone with better ideas and improvement is welcomed. 
-* The only rules are
-1. The name of the function should match the functionality it is doing.
-2. Use comments only when required. 
-3. Share with the ones who can improve this project even more.
+# Deployed on JETSON NANO
+It is recommended to burn a new SD card and to configure the environment directly in the system environment.  
+**Configuration environment:** `JetPack4.6.1, Cuda10.2, Python3.6.9`  
+## MediaPipe installation
+Priority installation of [MediaPipe](https://github.com/google/mediapipe) packages. Refer to this [零基础入门Jetson Nano——MediaPipe双版本（CPU+GPU）的安装与使用](https://blog.csdn.net/qq_56548850/article/details/123981579?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522171394895816800213081926%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=171394895816800213081926&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-1-123981579-null-null.142^v100^pc_search_result_base7&utm_term=jetson%20nano%20mediapipe&spm=1018.2226.3001.4187)  
 
-# CV-piano
+## Tensorflow installation  
+When installing tensorflow on a Jetson Nano, the dependency library `h5py` installation reports an error.  
+Refer to this [jetson nano使用tensorflow时h5py安装报错](https://blog.csdn.net/coco1234_1590/article/details/134476185?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522171410996016800226530774%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=171410996016800226530774&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-2-134476185-null-null.142^v100^pc_search_result_base7&utm_term=jetson%20nano%20tensorflow&spm=1018.2226.3001.4187) . You need to download the [h5py-3.1.0.tar.gz](https://github.com/h5py/h5py/releases) file and modify the `setup.py`.  
+Change this 
+```# Minimum supported versions of Numpy & Cython depend on the Python version
+NUMPY_MIN_VERSIONS = [
+    # Numpy    Python
+    ('1.12',   "=='3.6'"),
+    ('1.14.5', "=='3.7'"),
+    ('1.17.5', "=='3.8'"),
+    ('1.19.3', ">='3.9'"),]
+```
+to
+```
+# Minimum supported versions of Numpy & Cython depend on the Python version
+NUMPY_MIN_VERSIONS = [
+    # Numpy    Python
+    # ('1.12',   "=='3.6'"),
+    ('1.14.5', "=='3.7'"),
+    ('1.17.5', "=='3.8'"),
+    ('1.19.3', "=='3.6'"),]
+```
+Make sure `numpy` version is **1.19.x** and replace `Cython` version with **3.0.0a10**  
+
+```
+sudo pip3 install -U Cython==3.0.0a10
+sudo python3 ./setup.py install
+```
+After successfully installing `h5py3.1.0`, download the `Jetpack4.6.1` version of `tensorflow` provided by [nvidia](https://developer.nvidia.cn/embedded/downloads) official website. Installing tensorflow
+
+
+```
+sudo pip install xxx/xxx/xxx.whl
+```
+
+## We need to install opencv-python：
+Reference [Howto-Install-Mediapipe-in-Jetson-Nano](https://github.com/Melvinsajith/How-to-Install-Mediapipe-in-Jetson-Nano). Since the OpenCV that comes with the Jetson system will cause some problems, opencv needs to be reinstalled here. The `remove` operation is completed after the `install`.
+```
+ sudo apt-get install python3-opencv 
+ sudo apt-get remove python3-opencv
+```
