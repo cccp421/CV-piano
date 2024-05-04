@@ -8,17 +8,15 @@ from shapely.geometry import Point, Polygon
 import threading
 import queue
 import pygame
-from src import GLOBAL
 
 from models.model import Predict
 
-
+WEB_CAM = 0
 cols = 0
 polys = []
 
 snd_list = os.listdir("piano_keys")
-sounds = [f"piano_keys/{sound}" for sound in snd_list] 
-
+sounds = [f"piano_keys/{sound}" for sound in snd_list]
 
 
 def play_sound(sound_path):
@@ -47,7 +45,7 @@ def start_piano(finger):
     predict_thread = threading.Thread(target=predict_worker, args=(img_queue, result_queue, stop_event))
     predict_thread.start()
 
-    cap = cv2.VideoCapture(GLOBAL.WEB_CAM)
+    cap = cv2.VideoCapture(WEB_CAM)
     with mp_hands.Hands(
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5) as hands:
@@ -57,25 +55,27 @@ def start_piano(finger):
                 print("Ignoring empty camera frame.")
                 continue
             image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
+
             cols , polys = analyse(image)
             image = draw_over_image(image , cols , polys)
             cv2.imshow('analyse', image)
+
             key = cv2.waitKey(5)
             if key == ord('q'):
                 cap.release()
                 cv2.destroyAllWindows()
                 break
-        
+
     print(cols , polys)
     cnvrt_poly = [Polygon(polygon_coords) for polygon_coords in polys]
     prev = None
 
-    cap = cv2.VideoCapture(GLOBAL.WEB_CAM)
+    cap = cv2.VideoCapture(WEB_CAM)
     with mp_hands.Hands(
         min_detection_confidence=0.5,
         min_tracking_confidence=0.5) as hands:
         while cap.isOpened():
-            success, image = cap.read() 
+            success, image = cap.read()
 
             if not success:
                 print("Ignoring empty camera frame.")
@@ -87,21 +87,21 @@ def start_piano(finger):
             results = hands.process(image)
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-            
+
             roi = None  # Initialize roi outside the loop
 
             if results.multi_hand_landmarks:
                 for hand_landmarks in results.multi_hand_landmarks:
                     mp_drawing.draw_landmarks(
                         image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-                    
-                
+
+
                     for finger_tip_id in [finger]:  # Landmark IDs for all five fingers' tips
                         finger_tip = hand_landmarks.landmark[finger_tip_id]
                         height, width, _ = image.shape
                         tip_x, tip_y, tip_z = int(finger_tip.x * width), int(finger_tip.y * height), finger_tip.z
 
-                        box_size = int(GLOBAL.BOX_SIZE // 2)  # Adjust the size of the box as needed
+                        box_size = int(40 // 2)  # Adjust the size of the box as needed
                         box_color = (0, 255, 0)  # Green color
 
                         # Coordinates of the rectangle
@@ -110,7 +110,7 @@ def start_piano(finger):
 
                         # Draw a square box around the finger tip
                         cv2.rectangle(image, (x1, y1), (x2, y2), box_color, 2)
-                        
+
                         # Crop the region of interest (ROI)
                         roi = frame[y1:y2, x1:x2]
 
@@ -118,7 +118,7 @@ def start_piano(finger):
                         color = (0, 0, 255)
                         touched = False
                         if roi is not None and roi.shape[0] > 0 and roi.shape[1] > 0:
-                            
+
                             img_queue.put(roi)
 
                             try:
@@ -137,16 +137,16 @@ def start_piano(finger):
                                     else:
                                         color = (0, 0, 255)
                             image = cv2.circle(image, (50, 50), 10, color, 20)
-                        
-                        
+
+
                         point = Point(tip_x , tip_y)
                         for poly in cnvrt_poly:
                             is_inside = point.within(poly)
-                            
+
                             if is_inside:
-                                
+
                                 text = cnvrt_poly.index(poly) + 1
-                                
+
                                 cv2.putText(image , str(text) , (100 , 50) , cv2.FONT_HERSHEY_SIMPLEX, 2, color, 2)
                                 if touched:
                                     if text != prev:
@@ -159,7 +159,7 @@ def start_piano(finger):
 
                                 break
                 # Your remaining code
-                
+
             image = draw_over_image(image , cols , polys)
             image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)

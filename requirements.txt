@@ -1,7 +1,7 @@
 numpy
 matplotlib
 tensorflow
-opencv-python
+opencv-tensorpython
 mediapipe
 scipy
 pygame
