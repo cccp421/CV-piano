@@ -3,7 +3,6 @@ import numpy as np
 from scipy.spatial import distance
 
 
-
 """section formula"""
 def get_sections(line , points):
 
@@ -18,7 +17,7 @@ def get_sections(line , points):
         n = points+1 - m
         x = int((x2*m + x1*n) / (m+n))
         y = int((y2*m + y1*n) / (m+n))
-    
+
         sected_coords.append([x, y])
     return sected_coords
 
@@ -39,7 +38,7 @@ def draw_mesh(verts, image):
     # Define the number of rows and columns for the mesh
     rows, cols = 1, 24
 
-    # columns 
+    # columns
     line_ad = get_sections([verts[0] , verts[1]] , cols-1)
     line_bc = get_sections([verts[2] , verts[3]] , cols-1)
 
@@ -62,7 +61,7 @@ def draw_mesh(verts, image):
         polygons.append(polygon)
 
 
-    return cols , polygons 
+    return cols , polygons
 
 
 def draw_over_image(image , cols , polygons):
@@ -71,7 +70,7 @@ def draw_over_image(image , cols , polygons):
         polygon = np.array(polygons[pnt], dtype=np.int32)
         cv2.polylines(image, [polygon], True, colors[1], 2)
 
-    return image 
+    return image
 
 
 def analyse(image):
@@ -79,11 +78,11 @@ def analyse(image):
 
     # Apply Gaussian blur and adaptive thresholding to obtain binary image
     blur = cv2.GaussianBlur(gray, (7, 7), 1)
-    canny = cv2.Canny(blur , 10, 150)
+    canny = cv2.Canny(blur, 20, 150)
     # cv2.imshow("canny" , canny)
     thresh = cv2.adaptiveThreshold(canny, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 5, 2)
-    
-    # cv2.imshow("thresh" , thresh)
+
+    cv2.imshow("thresh" , thresh)
     # Find contours in the binary image
     contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -91,7 +90,7 @@ def analyse(image):
     contours = sorted(contours, key=cv2.contourArea, reverse=True)
 
     shapes = []
-    
+
     # Loop over the contours
     for contour in contours:
         # Approximate the contour to a polygon
@@ -105,13 +104,13 @@ def analyse(image):
 
     # Display the result
     try:
-        count = 1         
+        count = 1
         mesh_coords = []
         rect1 = [list(arr.flatten()) for arr in shapes[0]]
         rect2 = [list(arr.flatten()) for arr in shapes[1]]
         rect1.sort()
         rect2.sort()
-        
+
         coords_n_dist = []
 
         for i in rect1:
@@ -127,7 +126,7 @@ def analyse(image):
                 break
         mesh_coords.extend(max)
         if rect1[0][0] > rect2[3][0]:
-            rect1 , rect2 = rect2 , rect1 
+            rect1 , rect2 = rect2 , rect1
 
         for i in range(2):
             for j in range(4):
@@ -137,4 +136,5 @@ def analyse(image):
         return 0 , []
     else:
         return draw_mesh(mesh_coords, image)
-    
+
+
