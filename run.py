@@ -1,11 +1,8 @@
-import cv2
-import mediapipe as mp
 import os
 import time
 from src import fetch_data, train_model, piano
-from models import model
 
-# WEB_CAM = 0
+WEB_CAM = 0
 INDEX_FINGER = 8
 MIDDLE_FINGER = 12
 RING_FINGER = 16
@@ -13,7 +10,6 @@ PINKY_FINGER = 20
 FINGER = [INDEX_FINGER]
 UNTOUCH_FOLDER = "src/training_data/untouched"
 TOUCH_FOLDER = "src/training_data/touched"
-
 
 def fetch_train_data():
     print(
@@ -35,15 +31,12 @@ def fetch_train_data():
     print("Model Training Complete")
     time.sleep(3)
 
-# fetch_data.delete_model()
 run = True
-
-# fetch_data.clear_training_data()
 
 while run:
     model_list = os.listdir("models")
-    if "touch_detection_model.keras" not in model_list:
-        # print("We need to train model on your finger's data")
+    if "touch_detection_model.h5" not in model_list:
+        print("We need to train model on your finger's data")
         fetch_data.clear_training_data()
         fetch_train_data()
 

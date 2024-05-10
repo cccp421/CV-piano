@@ -55,11 +55,9 @@ def start_piano(finger):
                 print("Ignoring empty camera frame.")
                 continue
             image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
-
             cols , polys = analyse(image)
             image = draw_over_image(image , cols , polys)
             cv2.imshow('analyse', image)
-
             key = cv2.waitKey(5)
             if key == ord('q'):
                 cap.release()

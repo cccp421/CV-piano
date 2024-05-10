@@ -24,13 +24,8 @@ def get_sections(line , points):
 
 """Drawing mesh inside those rectangles"""
 def draw_mesh(verts, image):
-    # Define the polygon vertices
-    polygon_vertices = np.array(verts, np.int32)
 
-    # Reshape the array for OpenCV's fillPoly function
-    polygon_vertices = polygon_vertices.reshape((-1, 1, 2))
-
-
+    verts = [(tuple(coord)) for coord in verts]
     # Draw the polygon
     cv2.line(image, verts[0], verts[1], (0, 255, 0), 2)
     cv2.line(image, verts[2], verts[3], (0, 255, 0), 2)
@@ -41,12 +36,6 @@ def draw_mesh(verts, image):
     # columns
     line_ad = get_sections([verts[0] , verts[1]] , cols-1)
     line_bc = get_sections([verts[2] , verts[3]] , cols-1)
-
-
-
-    # rows are currently not used
-    line_ab = get_sections([verts[0] , verts[2]] , rows-1)
-    line_dc = get_sections([verts[1] , verts[3]] , rows-1)
 
     line_ad.insert(0 , verts[0])
     line_ad.append(verts[1])
@@ -75,33 +64,28 @@ def draw_over_image(image , cols , polygons):
 
 def analyse(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
     # Apply Gaussian blur and adaptive thresholding to obtain binary image
     blur = cv2.GaussianBlur(gray, (7, 7), 1)
-    canny = cv2.Canny(blur, 20, 150)
-    # cv2.imshow("canny" , canny)
-    thresh = cv2.adaptiveThreshold(canny, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 5, 2)
-
-    cv2.imshow("thresh" , thresh)
+    canny = cv2.Canny(blur , 100, 200)
+    cv2.imshow("canny" , canny)
     # Find contours in the binary image
-    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv2.findContours(canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     # Sort contours by area and keep the largest ones
     contours = sorted(contours, key=cv2.contourArea, reverse=True)
 
     shapes = []
-
-    # Loop over the contours
+    
+    # Loop over the contours3
     for contour in contours:
         # Approximate the contour to a polygon
         peri = cv2.arcLength(contour, True)
         approx = cv2.approxPolyDP(contour, 0.024 * peri, True)
+	
         # If the contour has 4 corners (a rectangle)
         if len(approx) == 4:
             shapes.append(approx)
-            for point in approx:
-                x, y = point.ravel()
-
+	    
     # Display the result
     try:
         count = 1
@@ -125,16 +109,12 @@ def analyse(image):
                 max = i[1]
                 break
         mesh_coords.extend(max)
-        if rect1[0][0] > rect2[3][0]:
-            rect1 , rect2 = rect2 , rect1
+	
+        print("mesh_coords :", mesh_coords)
 
-        for i in range(2):
-            for j in range(4):
-                cv2.putText(image,str(j) + str( shapes[i][j][0]) , shapes[i][j][0], cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 2)
     except:
-        # print("could not mesh")
+        print("could not mesh")
         return 0 , []
     else:
         return draw_mesh(mesh_coords, image)
-
 

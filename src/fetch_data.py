@@ -68,8 +68,8 @@ def clear_training_data():
 
 def delete_model():
     model = os.listdir("models")
-    if "touch_detection_model.keras" in model:
-        model.remove("touch_detection_model.keras")
+    if "touch_detection_model.h5" in model:
+        model.remove("touch_detection_model.h5")
         print("model removed")
     else:
         print("model not present")
