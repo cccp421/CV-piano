@@ -60,9 +60,14 @@ After successfully installing `h5py3.1.0`, download the `Jetpack4.6.1` version o
 sudo pip install xxx/xxx/xxx.whl
 ```
 
-## We need to install opencv-python：
+## We need to install opencv-python
 Reference [Howto-Install-Mediapipe-in-Jetson-Nano](https://github.com/Melvinsajith/How-to-Install-Mediapipe-in-Jetson-Nano). Since the OpenCV that comes with the Jetson system will cause some problems, opencv needs to be reinstalled here. The `remove` operation is completed after the `install`.
 ```
  sudo apt-get install python3-opencv 
  sudo apt-get remove python3-opencv
+```
+
+## Solve the problem that `pygame` packages can't play music
+```
+apt-get install git curl libsdl2-mixer-2.0-0 libsdl2-image-2.0-0 libsdl2-2.0-0
 ```
