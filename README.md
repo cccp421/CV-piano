@@ -1,5 +1,6 @@
 # CV-piano
-Project source code from https://github.com/Mayuresh1611/Paper-Piano
+Project source code from https://github.com/Mayuresh1611/Paper-Piano  
+I've rewritten and optimised the program to make it easier to deploy for the project.
 
 ## Setting up project
 Python version 3.11 and above
