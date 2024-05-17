@@ -25,10 +25,10 @@ def get_sections(line , points):
 """Drawing mesh inside those rectangles"""
 def draw_mesh(verts, image):
     # Define the polygon vertices
-    polygon_vertices = np.array(verts, np.int32)
-
-    # Reshape the array for OpenCV's fillPoly function
-    polygon_vertices = polygon_vertices.reshape((-1, 1, 2))
+    # polygon_vertices = np.array(verts, np.int32)
+    #
+    # # Reshape the array for OpenCV's fillPoly function
+    # verts = polygon_vertices.reshape((-1, 1, 2))
 
 
     # Draw the polygon
@@ -45,8 +45,8 @@ def draw_mesh(verts, image):
 
 
     # rows are currently not used
-    line_ab = get_sections([verts[0] , verts[2]] , rows-1)
-    line_dc = get_sections([verts[1] , verts[3]] , rows-1)
+    # line_ab = get_sections([verts[0] , verts[2]] , rows-1)
+    # line_dc = get_sections([verts[1] , verts[3]] , rows-1)
 
     line_ad.insert(0 , verts[0])
     line_ad.append(verts[1])
@@ -79,28 +79,29 @@ def analyse(image):
     # Apply Gaussian blur and adaptive thresholding to obtain binary image
     blur = cv2.GaussianBlur(gray, (7, 7), 1)
     canny = cv2.Canny(blur, 20, 150)
-    # cv2.imshow("canny" , canny)
-    thresh = cv2.adaptiveThreshold(canny, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 5, 2)
+    cv2.imshow("canny" , canny)
+    # thresh = cv2.adaptiveThreshold(canny, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 5, 2)
 
-    cv2.imshow("thresh" , thresh)
+    # cv2.imshow("thresh" , thresh)
     # Find contours in the binary image
-    contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv2.findContours(canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     # Sort contours by area and keep the largest ones
     contours = sorted(contours, key=cv2.contourArea, reverse=True)
 
     shapes = []
-
     # Loop over the contours
     for contour in contours:
+
         # Approximate the contour to a polygon
         peri = cv2.arcLength(contour, True)
         approx = cv2.approxPolyDP(contour, 0.024 * peri, True)
         # If the contour has 4 corners (a rectangle)
         if len(approx) == 4:
             shapes.append(approx)
-            for point in approx:
-                x, y = point.ravel()
+            # print('11111')
+            # for point in approx:
+            #     x, y = point.ravel()
 
     # Display the result
     try:
@@ -121,86 +122,21 @@ def analyse(image):
         mesh_coords.extend(coords_n_dist[0][1])
         for i in coords_n_dist[1:]:
             # threshold of 10 over y values of points
-            if coords_n_dist[0][1][0][1] + 10 < i[1][0][1]  and coords_n_dist[0][1][1][1] + 10< i[1][1][1] :
+            if coords_n_dist[0][1][0][1] + 10 < i[1][0][1] and coords_n_dist[0][1][1][1] + 10< i[1][1][1] :
                 max = i[1]
                 break
         mesh_coords.extend(max)
-        if rect1[0][0] > rect2[3][0]:
-            rect1 , rect2 = rect2 , rect1
+        # mesh_coords = tuple(mesh_coords)
+        print("mesh_coords :", mesh_coords)
+        # if rect1[0][0] > rect2[3][0]:
+        #     rect1 , rect2 = rect2 , rect1
 
-        for i in range(2):
-            for j in range(4):
-                cv2.putText(image,str(j) + str( shapes[i][j][0]) , shapes[i][j][0], cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 2)
+        # for i in range(2):
+        #     for j in range(4):
+        #         cv2.putText(image, str(j) + str(shapes[i][j][0]) , shapes[i][j][0], cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 2)
     except:
-        # print("could not mesh")
+        print("could not mesh")
         return 0 , []
     else:
         return draw_mesh(mesh_coords, image)
-
-
-# def analyse(image):
-#     try:
-#         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-#
-#         # Apply Gaussian blur and adaptive thresholding to obtain binary image
-#         blur = cv2.GaussianBlur(gray, (7, 7), 1)
-#         canny = cv2.Canny(blur, 20, 150)
-#         thresh = cv2.adaptiveThreshold(canny, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 5, 2)
-#         cv2.imshow("thresh", thresh)
-#         # Find contours in the binary image
-#         contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-#
-#         # Sort contours by area and keep the largest ones
-#         contours = sorted(contours, key=cv2.contourArea, reverse=True)
-#
-#         shapes = []
-#
-#         # Loop over the contours
-#         for contour in contours:
-#             # Approximate the contour to a polygon
-#             peri = cv2.arcLength(contour, True)
-#             approx = cv2.approxPolyDP(contour, 0.024 * peri, True)
-#             # If the contour has 4 corners (a rectangle)
-#             if len(approx) == 4:
-#                 shapes.append(approx)
-#                 for point in approx:
-#                     x, y = point.ravel()
-#
-#         if len(shapes) < 2:
-#             raise ValueError("Could not detect two rectangles in the image.")
-#
-#         mesh_coords = []
-#         rect1 = [list(arr.flatten()) for arr in shapes[0]]
-#         rect2 = [list(arr.flatten()) for arr in shapes[1]]
-#         rect1.sort()
-#         rect2.sort()
-#
-#         coords_n_dist = []
-#
-#         for i in rect1:
-#             for j in rect2:
-#                 dist = distance.euclidean(i , j)
-#                 coords_n_dist.append([dist , [i , j]])
-#         coords_n_dist.sort()
-#         mesh_coords.extend(coords_n_dist[0][1])
-#         for i in coords_n_dist[1:]:
-#             # threshold of 10 over y values of points
-#             if coords_n_dist[0][1][0][1] + 10 < i[1][0][1]  and coords_n_dist[0][1][1][1] + 10< i[1][1][1] :
-#                 max = i[1]
-#                 break
-#         mesh_coords.extend(max)
-#         if rect1[0][0] > rect2[3][0]:
-#             rect1 , rect2 = rect2 , rect1
-#
-#         for i in range(2):
-#             for j in range(4):
-#                 cv2.putText(image,str(j) + str( shapes[i][j][0]) , shapes[i][j][0], cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 2)
-#     except cv2.error as e:
-#         print(f"OpenCV error: {e}")
-#         return 0, []
-#     except Exception as e:
-#         print(f"An unexpected error occurred: {e}")
-#         return 0, []
-#     else:
-#         return draw_mesh(mesh_coords, image)
 

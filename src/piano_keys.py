@@ -1,0 +1,52 @@
+import RPi.GPIO as GPIO
+
+GPIO.cleanup()
+# 设置GPIO模式为BCM
+GPIO.setmode(GPIO.BCM)
+
+# 定义BY8002-16P模块使用的GPIO引脚
+IO1 = 5
+IO2 = 6
+IO3 = 13
+IO4 = 19
+IO5 = 26
+# 设置BY8002引脚为输出模式
+GPIO.setup(IO1, GPIO.OUT)
+GPIO.setup(IO2, GPIO.OUT)
+GPIO.setup(IO3, GPIO.OUT)
+GPIO.setup(IO4, GPIO.OUT)
+GPIO.setup(IO5, GPIO.OUT)
+
+music_dict = {
+    'music1': (GPIO.LOW, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH),
+    'music2': (GPIO.HIGH, GPIO.LOW, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH),
+    'music3': (GPIO.HIGH, GPIO.HIGH, GPIO.LOW, GPIO.HIGH, GPIO.HIGH),
+    'music4': (GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.LOW, GPIO.HIGH),
+    'music5': (GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.LOW),
+    'music6': (GPIO.LOW, GPIO.HIGH, GPIO.HIGH, GPIO.LOW, GPIO.LOW),
+    'music7': (GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.LOW, GPIO.LOW),
+    'music8': (GPIO.LOW, GPIO.LOW, GPIO.LOW, GPIO.HIGH, GPIO.LOW),
+    'music9': (GPIO.HIGH, GPIO.LOW, GPIO.LOW, GPIO.HIGH, GPIO.LOW),
+    'music10': (GPIO.LOW, GPIO.HIGH, GPIO.LOW, GPIO.HIGH, GPIO.LOW),
+    'music11': (GPIO.HIGH, GPIO.HIGH, GPIO.LOW, GPIO.HIGH, GPIO.LOW),
+    'music12': (GPIO.LOW, GPIO.LOW, GPIO.HIGH, GPIO.HIGH, GPIO.LOW),
+    'music13': (GPIO.HIGH, GPIO.LOW, GPIO.HIGH, GPIO.HIGH, GPIO.LOW),
+    'music14': (GPIO.LOW, GPIO.HIGH, GPIO.HIGH, GPIO.HIGH, GPIO.LOW),
+    'music15': (GPIO.HIGH, GPIO.LOW, GPIO.LOW, GPIO.LOW, GPIO.LOW),
+    'music16': (GPIO.LOW, GPIO.LOW, GPIO.LOW, GPIO.LOW, GPIO.HIGH),
+    'music17': (GPIO.HIGH, GPIO.LOW, GPIO.LOW, GPIO.LOW, GPIO.HIGH),
+    'music18': (GPIO.LOW, GPIO.HIGH, GPIO.LOW, GPIO.LOW, GPIO.HIGH),
+    'music19': (GPIO.HIGH, GPIO.HIGH, GPIO.LOW, GPIO.LOW, GPIO.HIGH),
+    'music20': (GPIO.LOW, GPIO.LOW, GPIO.HIGH, GPIO.LOW, GPIO.HIGH),
+    'music21': (GPIO.HIGH, GPIO.LOW, GPIO.HIGH, GPIO.LOW, GPIO.HIGH),
+    'music22': (GPIO.LOW, GPIO.HIGH, GPIO.HIGH, GPIO.LOW, GPIO.HIGH),
+    'music23': (GPIO.LOW, GPIO.HIGH, GPIO.LOW, GPIO.LOW, GPIO.LOW),
+    'music24': (GPIO.LOW, GPIO.LOW, GPIO.LOW, GPIO.HIGH, GPIO.HIGH)
+}
+
+
+def play_music(music_number):
+    music_name = f'music{music_number}'
+    states = music_dict[music_name]
+    for io_pin, state in zip((IO1, IO2, IO3, IO4, IO5), states):
+        GPIO.output(io_pin, state)

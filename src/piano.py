@@ -2,30 +2,34 @@ import cv2
 import mediapipe as mp
 mp_drawing = mp.solutions.drawing_utils
 mp_hands = mp.solutions.hands
+from src import piano_keys
+
+
 from src.mapping import analyse, draw_over_image
-import os
 from shapely.geometry import Point, Polygon
 import threading
 import queue
-import pygame
-
+# import pygame
+# import os
 from models.model import Predict
+
 
 WEB_CAM = 0
 cols = 0
 polys = []
 
-snd_list = os.listdir("piano_keys")
-sounds = [f"piano_keys/{sound}" for sound in snd_list]
-
-
-def play_sound(sound_path):
-    pygame.mixer.init()
-    pygame.mixer.music.load(sound_path)
-    pygame.mixer.music.play()
-    while pygame.mixer.music.get_busy():
-        continue
-
+# snd_list = os.listdir("piano_keys")
+# sounds = [f"piano_keys/{sound}" for sound in snd_list]
+#
+#
+# def play_sound(sound_path):
+#     pygame.mixer.init()
+#     pygame.mixer.music.load(sound_path)
+#     pygame.mixer.music.play()
+#     while pygame.mixer.music.get_busy():
+#         continue
+# def music():
+#     print(111)
 def predict_worker(img_queue, result_queue, stop_event):
 
     while not stop_event.is_set():
@@ -48,7 +52,7 @@ def start_piano(finger):
     cap = cv2.VideoCapture(WEB_CAM)
     with mp_hands.Hands(
         min_detection_confidence=0.5,
-        min_tracking_confidence=0.5) as hands:
+        min_tracking_confidence=0.5, max_num_hands=1) as hands:
         while cap.isOpened():
             success, image = cap.read()
             if not success:
@@ -58,6 +62,7 @@ def start_piano(finger):
 
             cols , polys = analyse(image)
             image = draw_over_image(image , cols , polys)
+
             cv2.imshow('analyse', image)
 
             key = cv2.waitKey(5)
@@ -73,7 +78,7 @@ def start_piano(finger):
     cap = cv2.VideoCapture(WEB_CAM)
     with mp_hands.Hands(
         min_detection_confidence=0.5,
-        min_tracking_confidence=0.5) as hands:
+        min_tracking_confidence=0.5, max_num_hands=1) as hands:
         while cap.isOpened():
             success, image = cap.read()
 
@@ -91,6 +96,7 @@ def start_piano(finger):
             roi = None  # Initialize roi outside the loop
 
             if results.multi_hand_landmarks:
+
                 for hand_landmarks in results.multi_hand_landmarks:
                     mp_drawing.draw_landmarks(
                         image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
@@ -146,14 +152,18 @@ def start_piano(finger):
                             if is_inside:
 
                                 text = cnvrt_poly.index(poly) + 1
-
+                                # print(text)
                                 cv2.putText(image , str(text) , (100 , 50) , cv2.FONT_HERSHEY_SIMPLEX, 2, color, 2)
                                 if touched:
                                     if text != prev:
-                                        sound_path = sounds[text - 1]
-                                        sound_thread = threading.Thread(target=play_sound, args=(sound_path,))
+                                        sound_path = [text]
+                                        sound_thread = threading.Thread(target=piano_keys.play_music, args=(sound_path))
+                                        # sound_path = sounds[text - 1]
+                                        # sound_thread = threading.Thread(target=play_sound, args=(sound_path,))
+                                        # sound_thread = threading.Thread(target=music())
                                         sound_thread.start()
                                         prev = text
+
                                 else:
                                     prev = None
 
@@ -161,10 +171,11 @@ def start_piano(finger):
                 # Your remaining code
 
             image = draw_over_image(image , cols , polys)
+
             image = cv2.cvtColor(image,cv2.COLOR_BGR2RGB)
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             cv2.imshow('MediaPipe Hands', image)
-            cv2.imshow('Original', frame)
+            # cv2.imshow('Original', frame)
             key = cv2.waitKey(5)
             if key == ord('q'):
                 img_queue.put(None)
@@ -172,5 +183,5 @@ def start_piano(finger):
                 predict_thread.join()
                 cap.release()
                 cv2.destroyAllWindows()
-                break 
+                break
 

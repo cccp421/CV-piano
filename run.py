@@ -1,11 +1,7 @@
-import cv2
-import mediapipe as mp
 import os
 import time
 from src import fetch_data, train_model, piano
-from models import model
 
-# WEB_CAM = 0
 INDEX_FINGER = 8
 MIDDLE_FINGER = 12
 RING_FINGER = 16
@@ -13,72 +9,6 @@ PINKY_FINGER = 20
 FINGER = [INDEX_FINGER]
 UNTOUCH_FOLDER = "src/training_data/untouched"
 TOUCH_FOLDER = "src/training_data/touched"
-
-# def RUN(finger):
-#     mp_drawing = mp.solutions.drawing_utils
-#     mp_hands = mp.solutions.hands
-#
-#     cap = cv2.VideoCapture(WEB_CAM)
-#     iter = 0
-#     with mp_hands.Hands(
-#             min_detection_confidence=0.5,
-#             min_tracking_confidence=0.5) as hands:
-#         while cap.isOpened():
-#             success, image = cap.read()
-#             if not success:
-#                 print("Ignoring empty camera frame.")
-#                 continue
-#
-#             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-#             copy_image = image.copy()
-#
-#             image.flags.writeable = False
-#             results = hands.process(image)
-#             image.flags.writeable = True
-#             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-#
-#             finger_tracking_frame = None  # initializing region of interest
-#
-#             if results.multi_hand_landmarks:
-#                 for hand_landmarks in results.multi_hand_landmarks:
-#                     mp_drawing.draw_landmarks(
-#                         image, hand_landmarks, mp_hands.HAND_CONNECTIONS)
-#                     for finger_tip_id in [finger]:  # Landmark IDs for all five fingers' tips
-#                         finger_tip = hand_landmarks.landmark[finger_tip_id]
-#                         height, width, _ = image.shape
-#                         tip_x, tip_y, tip_z = int(finger_tip.x * width), int(finger_tip.y * height), finger_tip.z
-#
-#                         box_size = int(40 // 2)  # Adjust the size of the box as needed
-#                         box_color = (0, 255, 0)  # Green color
-#
-#                         # Coordinates of the rectangle
-#                         x1, y1 = tip_x - box_size, tip_y - box_size
-#                         x2, y2 = tip_x + box_size, tip_y + box_size
-#
-#                         # Draw a square box around the finger tip
-#                         cv2.rectangle(image, (x1, y1), (x2, y2), box_color, 2)
-#
-#                         # Crop the region of interest (ROI)
-#                         finger_tracking_frame = copy_image[y1:y2, x1:x2]
-#                         color = (0, 0, 255)
-#                         if finger_tracking_frame is not None and finger_tracking_frame.shape[0] > 0 and \
-#                                 finger_tracking_frame.shape[1] > 0:
-#                             finger_tracking_frame = cv2.cvtColor(finger_tracking_frame, cv2.COLOR_BGR2RGB)
-#                             pred = model.Predict(finger_tracking_frame)
-#                             if pred:
-#                                 color = (0, 255, 0)
-#                             else:
-#                                 if color == (0, 255, 0):
-#                                     pass
-#                                 else:
-#                                     color = (0, 0, 255)
-#                             image = cv2.circle(image, (250, 300), 2, color, 20)
-#             cv2.imshow('Tocuh tracking', image)
-#             key = cv2.waitKey(5)
-#             if key == ord('q'):
-#                 cap.release()
-#                 cv2.destroyAllWindows()
-#                 break
 
 
 def fetch_train_data():
@@ -101,14 +31,8 @@ def fetch_train_data():
     print("Model Training Complete")
     time.sleep(3)
 
-    # RUN(INDEX_FINGER)
 
-
-
-# fetch_data.delete_model()
 run = True
-
-# fetch_data.clear_training_data()
 
 while run:
     model_list = os.listdir("models")
