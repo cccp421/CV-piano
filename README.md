@@ -2,13 +2,13 @@
 Project source code from https://github.com/Mayuresh1611/Paper-Piano  
 I've rewritten and optimised the program to make it easier to deploy for the project.
 
-## Setting up project
+### Setting up project
 Python version 3.11 and above
 1. Clone the repository ```git clone https://github.com/Mayuresh1611/Paper-Piano.git```
 2. run command ```pip install -r requirements.txt``` in the command line.
 3. Execute ```run.py``` file
 
-## HOW TO USE   
+### HOW TO USE   
 This is a little trickier part as the project requires you to set up a webcam in a specific angle at a specific height and distance. Also  stronger the light, the better the performance. 
 #### STUFF YOU WILL REQUIRE 
 1. webcam or you can use third-party tools for webcam. 
