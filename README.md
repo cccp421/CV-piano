@@ -19,7 +19,8 @@ Just like shown in the demo video.
 4. Hand with all fingers.
 
 
-# Deployed on JETSON NANO
+# Deployed on JETSON NANO  
+## Go to the ['jetson Branches'](https://github.com/cccp421/CV-piano/tree/jetson) for more details.
 It is recommended to burn a new SD card and to configure the environment directly in the system environment.  
 **Configuration environment:** `JetPack4.6.1, Cuda10.2, Python3.6.9`  
 ## MediaPipe installation
