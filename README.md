@@ -1,3 +1,4 @@
+![2.jpg](https://github.com/cccp421/CV-piano/blob/main/2.jpg)
 # CV-piano
 Project source code from https://github.com/Mayuresh1611/Paper-Piano  
 I've rewritten and optimised the program to make it easier to deploy for the project.
